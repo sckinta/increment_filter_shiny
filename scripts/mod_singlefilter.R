@@ -120,13 +120,13 @@ singleFilterServer <- function(id, idx) {
       #     )
       # })
       out <- list(
-        and_or = reactiveVal(input[[paste("and_or", idx, sep="_")]]),
-        col_selected = reactiveVal(input[[paste("column", idx, sep="_")]]),
-        filter_val = reactiveVal(input[[paste("filter", idx, sep="_")]]),
-        comp_sign = reactiveVal(input[[paste("compare", idx, sep="_")]]),
-        button = reactiveVal(input[[paste("bttn", idx, sep="_")]])
-        
-                             
+        and_or = reactive(input[[paste("and_or", idx, sep="_")]]),
+        col_selected = reactive(input[[paste("column", idx, sep="_")]]),
+        filter_val = reactive(input[[paste("filter", idx, sep="_")]]),
+        comp_sign = reactive(input[[paste("compare", idx, sep="_")]]),
+        button = reactive(input[[paste("bttn", idx, sep="_")]])
+
+
       )
       # observe({
       #     print(paste("filter", idx, sep="_"))

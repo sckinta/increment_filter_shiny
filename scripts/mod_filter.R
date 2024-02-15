@@ -16,52 +16,77 @@ filterServer <- function(id) {
       filters <- singleFilterServer(id = "single_filter", idx = 1)
       click_id <- reactiveVal(1)
       iris_df <- reactiveVal(iris)
+      
+      # observeEvent(filters(), {
+      #     # req(filters()$filter_val, filters()$comp_sign, filters()$col_selected)
+      #     df <- filter_df(filter_val = filters()$filter_val,
+      #                     comp_sign = filters()$comp_sign,
+      #                     col_selected = filters()$col_selected,
+      #                     ori_df = iris_df())
+      #     iris_df(df)
+      # })
+
+      # filters_val <- reactiveValues()
       observe({
-          req(c(filters$filter_val, filters$comp_sign, filters$col_selected))
-          df <- filter_df(filter_val = filters$filter_val, 
-                          comp_sign = filters$comp_sign, 
-                          col_selected = filters$col_selected, 
+          req(c(filters$filter_val(), filters$comp_sign(), filters$col_selected()))
+
+          # filters_val$filter_val <- filters$filter_val()
+          # filters_val$comp_sign <- filters$comp_sign()
+          # filters_val$col_selected <- filters$col_selected()
+          #
+          # df <- filter_df(filter_val = filters_val$filter_val,
+          #                 comp_sign = filters_val$comp_sign,
+          #                 col_selected = filters_val$col_selected,
+          #                 ori_df = iris_df())
+          df <- filter_df(filter_val = filters$filter_val(),
+                          comp_sign = filters$comp_sign(),
+                          col_selected = filters$col_selected(),
                           ori_df = iris_df())
-          df |> 
+          df |>
               iris_df()
       })
 
       
-      # observe({
-      #     req(filters())
-      #     print(filters())
-      # })
-      
-      # observeEvent(filters()$button, {
-      #       click_id(click_id() + 1)
-      #       output$filter_group <- renderUI({
-      #           ns <- session$ns
-      #           singleFilterUI(id = ns(paste("filter", click_id(), sep="_")), idx = click_id())
-      #       })
-      #       filters2 <- singleFilterServer(id = paste("filter", click_id(), sep="_"), idx = click_id())
-      #       
-      #       # filters2 <- reactiveValuesToList(filters2)
-      #       # req(filters2())
-      #       print(click_id()) # debug
-      #       print(filters2()) # debug
-      #       
-      #       if(filters2()$and_or=="AND"){
-      #           df2 <- filter_df(filters = filters2(), ori_df = iris_df())
-      #       }else if(filters2$and_or=="OR"){
-      #           df2 <- iris_df() |> 
-      #               bind_rows(filter_df(filters = filters2(), ori_df = iris)) |> 
-      #               distinct()
-      #       }
-      #       # update filters (throw error)
-      #       for (v in names(filters())){
-      #           filters()[[v]] <- filters2()[[v]]
-      #       }
-      #       print(filters()) # debug
-      #       # updating (not updating)
-      #       df2 |> 
-      #           iris_df()
-      #       
-      # })
+      observeEvent(filters$button(), {
+            click_id(click_id() + 1)
+            output$filter_group <- renderUI({
+                ns <- session$ns
+                singleFilterUI(id = ns(paste("filter", click_id(), sep="_")), idx = click_id())
+            })
+            filters2 <- singleFilterServer(id = paste("filter", click_id(), sep="_"), idx = click_id())
+
+            print(click_id()) # debug
+            print(filters2$filter_val()) # debug
+            
+            req(c(filters2$filter_val(), filters2$comp_sign(), filters2$col_selected()))
+            
+            if(filters2$and_or()=="AND"){
+                df2 <- filter_df(filter_val = filters2$filter_val(),
+                                 comp_sign = filters2$comp_sign(),
+                                 col_selected = filters2$col_selected(),
+                                 ori_df = iris_df())
+            }
+            else if(filters2$and_or()=="OR"){
+                df2 <- iris_df() |>
+                    bind_rows(
+                      filter_df(filter_val = filters2$filter_val(),
+                                comp_sign = filters2$comp_sign(),
+                                col_selected = filters2$col_selected(),
+                                ori_df = iris)
+                    ) |>
+                    distinct()
+            }
+
+            # updating (not updating)
+            df2 |>
+                iris_df()
+            
+            # update filters (throw error)
+            for (v in names(filters)){
+              filters[[v]] <- filters2[[v]]
+            }
+
+      })
       iris_df
       # iris_df
       
