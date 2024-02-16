@@ -2,7 +2,7 @@ filterUI <- function(id) {
   ns <- NS(id)
   tagList(
       fluidRow(singleFilterUI(
-        id = ns("single_filter"), idx = 1
+        id = ns("single_filter"), include_and_or = FALSE
         )),
      fluidRow(uiOutput(outputId = ns("filter_group")))
   )
@@ -12,8 +12,7 @@ filterServer <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
-      # filters <- reactiveValues()
-      filters <- singleFilterServer(id = "single_filter", idx = 1)
+      filters <- singleFilterServer(id = "single_filter", filter_label = "compare", text_style = 'padding:0px; padding-left:1px; padding-top:25px')
       click_id <- reactiveVal(1)
       iris_df <- reactiveVal(iris)
       
@@ -49,9 +48,9 @@ filterServer <- function(id) {
             click_id(click_id() + 1)
             output$filter_group <- renderUI({
                 ns <- session$ns
-                singleFilterUI(id = ns(paste("filter", click_id(), sep="_")), idx = click_id())
+                singleFilterUI(id = ns(paste("filter", click_id(), sep="_")))
             })
-            filters2 <- singleFilterServer(id = paste("filter", click_id(), sep="_"), idx = click_id())
+            filters2 <- singleFilterServer(id = paste("filter", click_id(), sep="_"))
 
             print(click_id()) # debug
             print(filters2$filter_val()) # debug
