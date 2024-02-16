@@ -33,6 +33,10 @@ filterServer <- function(id, df) {
           df[the_filter,]
       })
       
+      # Create a reactive value to store additional filters that we add to our 
+      # UI. We can index into this variable using the ID of the filter. filtered_df 
+      # will take a dependency on it and any time components are changed, the overall
+      # filter will be recomputed and a new filtered_df created
       filters <- reactiveValues()
       observeEvent(filter_1$button(), {
             new_id = as.character(click_id())
