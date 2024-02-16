@@ -14,10 +14,19 @@ filterServer <- function(id, df) {
     function(input, output, session) {
       filter_1 <- singleFilterServer(id = "single_filter", df = df, filter_label = "compare", text_style = 'padding:0px; padding-left:1px; padding-top:25px')
       click_id <- reactiveVal(1)
-
+      
+      ## Create a reactiveValues object to store the filters we create
+      filters <- reactiveValues()
+      
+      observe({
+        req(filter_1$filter())
+        filters[[as.character(click_id())]] <- filter_1
+      })
+      
+      
       filtered_df <- reactive({
           req(filter_1$filter())
-          
+          cat("filter_data", as.character(click_id()), ":")
           # We start with the filter calculated by the original filter
           the_filter <- filter_1$filter()
           
@@ -30,6 +39,7 @@ filterServer <- function(id, df) {
                   the_filter <- the_filter | filters[[filter_id]]$filter()
               }
           }
+          cat(sum(the_filter), "\n")
           df[the_filter,]
       })
       
@@ -37,15 +47,23 @@ filterServer <- function(id, df) {
       # UI. We can index into this variable using the ID of the filter. filtered_df 
       # will take a dependency on it and any time components are changed, the overall
       # filter will be recomputed and a new filtered_df created
-      filters <- reactiveValues()
-      observeEvent(filter_1$button(), {
+      filter_group_ui <- reactiveValues()
+      
+      # observeEvent(filters[[as.character(click_id())]]$button(),{ # <---- change option 1
+      observeEvent(filter_1$button(), { # <---- change option 2
+            # click_id(click_id() + 1) # <---- should update click_id here, but it through errors
+            cat("create_filter", as.character(click_id()), ":")
             new_id = as.character(click_id())
             output$filter_group <- renderUI({
                 ns <- session$ns
-                singleFilterUI(id = ns(new_id), column_choices = names(df))
+                filter_group_ui[[new_id]] <- singleFilterUI(id = ns(new_id), column_choices = names(df))
+                tagList(
+                  reactiveValuesToList(filter_group_ui)
+                )
             })
             new_filter <- singleFilterServer(id = new_id, df = df)
             filters[[new_id]] <- new_filter
+            cat(sum(new_filter$filter()), "\n")
             click_id(click_id() + 1)
       })
       filtered_df
