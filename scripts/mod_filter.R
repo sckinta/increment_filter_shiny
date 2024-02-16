@@ -26,7 +26,7 @@ filterServer <- function(id, df) {
 
       # filters_val <- reactiveValues()
       filtered_df <- reactive({
-          req(c(filters$filter_val(), filters$comp_sign(), filters$col_selected()))
+          req(filters$filter())
 
           # filters_val$filter_val <- filters$filter_val()
           # filters_val$comp_sign <- filters$comp_sign()
@@ -36,10 +36,7 @@ filterServer <- function(id, df) {
           #                 comp_sign = filters_val$comp_sign,
           #                 col_selected = filters_val$col_selected,
           #                 ori_df = iris_df())
-          df <- filter_df(filter_val = filters$filter_val(),
-                          comp_sign = filters$comp_sign(),
-                          col_selected = filters$col_selected(),
-                          ori_df = df)
+          df[filters$filter(),]
       })
 
       

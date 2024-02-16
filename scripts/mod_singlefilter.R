@@ -1,3 +1,25 @@
+calculate_filter <- function(filter_val, comp_sign, col_selected, ori_df) {
+    if (!is.null(filter_val)) {
+        if (filter_val == "") {
+            filter_val = NULL
+        }
+    }
+    
+    if (any(map_lgl(list(filter_val, comp_sign, col_selected), is.null))) {
+        TRUE
+    } else{
+        if (comp_sign == "includes") {
+            ori_df[[col_selected]] == filter_val
+        } else if (comp_sign == "excludes") {
+            ori_df[[col_selected]] != filter_val
+        } else{
+            comparison_fn <- get(comp_sign)
+            # Create a boolean array by applying the comparison function
+            boolean_array <- comparison_fn(ori_df[[col_selected]], as.numeric(filter_val))
+        }
+    }
+}
+
 singleFilterUI <- function(id, column_choices, include_and_or = TRUE) {
   ns <- NS(id)
   
@@ -77,7 +99,8 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
                          
                    )
               )
-          }else{
+          }
+          else{
               pickerInput(
                   inputId = ns("filter"),
                   label = filter_label,
@@ -88,42 +111,21 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
           }
       })
       
-      # observe({
-      #     print(paste("compare", idx, ":",sep="_"))
-      #     req(input[[paste("compare", idx, sep="_")]])
-      #     print(input[[paste("compare", idx, sep="_")]])
-      # })
+      filter <- reactive({
+          calculate_filter(
+              filter_val = input$filter,
+              comp_sign = input$compare,
+              col_selected = input$column,
+              ori_df = df
+          )
+      })
       
-      # out <- reactive({
-      #     req(
-      #         c(
-      #             input[[paste("and_or", idx, sep="_")]],
-      #             input[[paste("column", idx, sep="_")]],
-      #             input[[paste("filter", idx, sep="_")]],
-      #             input[[paste("compare", idx, sep="_")]]
-      #         )
-      #     )
-      #     list(
-      #         and_or = ifelse(idx==1, "AND", input[[paste("and_or", idx, sep="_")]]),
-      #         col_selected = input[[paste("column", idx, sep="_")]],
-      #         filter_val = input[[paste("filter", idx, sep="_")]],
-      #         comp_sign = input[[paste("compare", idx, sep="_")]],
-      #         button = input[[paste("bttn", idx, sep="_")]]
-      #     )
-      # })
       out <- list(
         and_or = reactive(input$and_or),
-        col_selected = reactive(input$column),
-        filter_val = reactive(input$filter),
-        comp_sign = reactive(input$compare),
-        button = reactive(input$bttn)
-
-
+        button = reactive(input$bttn),
+        filter = filter
       )
-      # observe({
-      #     print(paste("filter", idx, sep="_"))
-      #     print(out())
-      # })
+
       out
     }
   )
