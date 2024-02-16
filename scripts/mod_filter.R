@@ -1,21 +1,20 @@
-filterUI <- function(id) {
+filterUI <- function(id, column_choices) {
   ns <- NS(id)
   tagList(
       fluidRow(singleFilterUI(
-        id = ns("single_filter"), include_and_or = FALSE
+        id = ns("single_filter"), column_choices = column_choices, include_and_or = FALSE
         )),
      fluidRow(uiOutput(outputId = ns("filter_group")))
   )
 }
 
-filterServer <- function(id) {
+filterServer <- function(id, df) {
   moduleServer(
     id,
     function(input, output, session) {
-      filters <- singleFilterServer(id = "single_filter", filter_label = "compare", text_style = 'padding:0px; padding-left:1px; padding-top:25px')
+      filters <- singleFilterServer(id = "single_filter", df = df, filter_label = "compare", text_style = 'padding:0px; padding-left:1px; padding-top:25px')
       click_id <- reactiveVal(1)
-      iris_df <- reactiveVal(iris)
-      
+
       # observeEvent(filters(), {
       #     # req(filters()$filter_val, filters()$comp_sign, filters()$col_selected)
       #     df <- filter_df(filter_val = filters()$filter_val,
@@ -40,7 +39,7 @@ filterServer <- function(id) {
           df <- filter_df(filter_val = filters$filter_val(),
                           comp_sign = filters$comp_sign(),
                           col_selected = filters$col_selected(),
-                          ori_df = iris_df())
+                          ori_df = df)
       })
 
       

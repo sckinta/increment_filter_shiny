@@ -25,7 +25,7 @@ ui <- dashboardPage(
     dashboardBody(
         tagList(
             # singleFilterUI(id = "first_filter", idx = 1),
-            filterUI(id = "more_filter"),
+            filterUI(id = "more_filter", names(iris)),
             dataTableOutput(outputId = "table")
         )
         
@@ -40,7 +40,7 @@ server <- function(input, output) {
     #     print(out())
     #     
     # })
-    df <- filterServer(id = "more_filter")
+    df <- filterServer(id = "more_filter", iris)
     output$table <- renderDataTable({
         df()
     },

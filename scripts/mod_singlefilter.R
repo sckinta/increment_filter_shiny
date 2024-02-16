@@ -1,4 +1,4 @@
-singleFilterUI <- function(id, include_and_or = TRUE) {
+singleFilterUI <- function(id, column_choices, include_and_or = TRUE) {
   ns <- NS(id)
   
   if (include_and_or) {
@@ -19,7 +19,7 @@ singleFilterUI <- function(id, include_and_or = TRUE) {
       column(2, style='padding:0px;', 
              selectizeInput(inputId = ns("column"), 
                      label = column_label,
-                     choices = names(iris), 
+                     choices = column_choices, 
                      multiple = F)
              ),
       column(2, style='padding:0px;', 
@@ -45,7 +45,7 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
           
           col_selected <- input$column
 
-          if(class(iris[[col_selected]]) == "numeric"){
+          if(class(df[[col_selected]]) == "numeric"){
               choice_type <- c(">", "<", ">=", "<=", "==", "!=")
           }else{
               choice_type <- c("includes", "excludes")
@@ -62,8 +62,8 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
           req(input$column)
           col_selected <- input$column
 
-          if(class(iris[[col_selected]]) == "numeric"){
-              col_range <- range(iris[[col_selected]], na.rm = T)
+          if(class(df[[col_selected]]) == "numeric"){
+              col_range <- range(df[[col_selected]], na.rm = T)
               col_range <- format(col_range, scientific = T, digits = 2, drop0trailing=T)
               tagList(
                   column(6, style='padding:0px;', textInput(
@@ -81,7 +81,7 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
               pickerInput(
                   inputId = ns("filter"),
                   label = filter_label,
-                  choices = unique(iris[[col_selected]]),
+                  choices = unique(df[[col_selected]]),
                   multiple = T,
                   options = list(`live-search`=TRUE)
               )
