@@ -18,7 +18,11 @@ filterServer <- function(id, df) {
       filtered_df <- reactive({
           req(filter_1$filter())
           
+          # We start with the filter calculated by the original filter
           the_filter <- filter_1$filter()
+          
+          # Now, we can iterate through any filters we've applied in addition 
+          # to the original filter
           for (filter_id in names(filters)) {
               if (is.null(filters[[filter_id]]$and_or()) || filters[[filter_id]]$and_or() == "AND") {
                   the_filter <- the_filter & filters[[filter_id]]$filter()

@@ -13,6 +13,9 @@ calculate_filter <- function(filter_val, comp_sign, col_selected, ori_df) {
         } else if (comp_sign == "excludes") {
             ori_df[[col_selected]] != filter_val
         } else{
+            # get lets us take a string name for a function and retrieve a handle
+            # for the actual function. Using this, we can perform a comparison
+            # between the specified value and the column selected by the user
             comparison_fn <- get(comp_sign)
             # Create a boolean array by applying the comparison function
             boolean_array <- comparison_fn(ori_df[[col_selected]], as.numeric(filter_val))
@@ -111,6 +114,9 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
           }
       })
       
+      # Here, we return the filter computed by this module, the parent server
+      # that creates this filter can then combine filter across modules as 
+      # necessary
       filter <- reactive({
           calculate_filter(
               filter_val = input$filter,
@@ -120,6 +126,9 @@ singleFilterServer <- function(id, df, filter_label = NULL, text_style = "paddin
           )
       })
       
+      # We return and_or, which is necessary for the server to decide how to
+      # combine filters, the button, and the filter we've computed. We might 
+      # consider moving this button into the parent server UI.
       out <- list(
         and_or = reactive(input$and_or),
         button = reactive(input$bttn),
