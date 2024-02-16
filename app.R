@@ -16,7 +16,6 @@ data("iris")
 
 source("scripts/mod_singlefilter.R")
 source("scripts/mod_filter.R")
-source("scripts/exe_funs.R")
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
