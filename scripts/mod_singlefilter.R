@@ -19,6 +19,7 @@ calculate_filter <- function(filter_val, comp_sign, col_selected, ori_df) {
             comparison_fn <- get(comp_sign)
             # Create a boolean array by applying the comparison function
             boolean_array <- comparison_fn(ori_df[[col_selected]], as.numeric(filter_val))
+            boolean_array
         }
     }
 }

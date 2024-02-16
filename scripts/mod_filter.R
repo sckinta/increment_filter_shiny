@@ -47,25 +47,31 @@ filterServer <- function(id, df) {
       # UI. We can index into this variable using the ID of the filter. filtered_df 
       # will take a dependency on it and any time components are changed, the overall
       # filter will be recomputed and a new filtered_df created
+
       filter_group_ui <- reactiveValues()
       
       # observeEvent(filters[[as.character(click_id())]]$button(),{ # <---- change option 1
       observeEvent(filter_1$button(), { # <---- change option 2
             # click_id(click_id() + 1) # <---- should update click_id here, but it through errors
             cat("create_filter", as.character(click_id()), ":")
+
             new_id = as.character(click_id())
+            
             output$filter_group <- renderUI({
                 ns <- session$ns
                 filter_group_ui[[new_id]] <- singleFilterUI(id = ns(new_id), column_choices = names(df))
+                
                 tagList(
                   reactiveValuesToList(filter_group_ui)
                 )
+                # singleFilterUI(id = ns(new_id), column_choices = names(df))
             })
             new_filter <- singleFilterServer(id = new_id, df = df)
             filters[[new_id]] <- new_filter
-            cat(sum(new_filter$filter()), "\n")
-            click_id(click_id() + 1)
+            # click_id(click_id() + 1)
+
       })
+      
       filtered_df
     }
   )
