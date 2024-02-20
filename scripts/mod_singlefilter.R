@@ -32,7 +32,8 @@ singleFilterUI <- function(id, column_choices, include_and_or = TRUE) {
       or_and_widget <- column(2, selectizeInput(inputId = ns("and_or"), 
                                                 label = NULL,
                                                 choices = c("AND", "OR"), 
-                                                multiple = F))
+                                                multiple = F), 
+                              style='padding:0px; left-padding:7px')
       bttn_style <- 'padding:0px' 
   } else {
       or_and_widget <- column(2, h5(""))
@@ -60,7 +61,7 @@ singleFilterUI <- function(id, column_choices, include_and_or = TRUE) {
   )
 }
 
-singleFilterServer <- function(id, df, filter_label = NULL, text_style = "padding:0px; padding-left:1px") {
+singleFilterServer <- function(id, df, filter_label = NULL, text_style = "padding-left:0px") {
   moduleServer(
     id,
     function(input, output, session) {
